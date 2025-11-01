@@ -1,4 +1,4 @@
-from split.utils import*
+from src.utils import*
 from .dto.image_label_dto import ImageLabelDTO
  
 class CoClusterUncertainty:

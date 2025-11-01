@@ -1,4 +1,5 @@
-from split.utils import *
+from src.utils import*
+
 @dataclass
 class Maskdto:
     """

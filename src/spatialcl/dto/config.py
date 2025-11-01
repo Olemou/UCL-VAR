@@ -1,6 +1,5 @@
-from split.utils import*
 from typing import Literal
-
+from src.utils import*
 class ConfigDto:
     """
     Data Transfer Object for configuration parameters and tensor dimensions.

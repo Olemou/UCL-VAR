@@ -1,10 +1,9 @@
 """
-split.utils
+spatialcl.utils
 
 Provides default PyTorch imports, device configuration,
 and commonly used helper functions.
 """
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

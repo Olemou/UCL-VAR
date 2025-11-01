@@ -1,4 +1,4 @@
-from split.utils import *
+from src.utils import*
 from config.disco_config import load_config
 from typing import Dict
 from dataclasses import field

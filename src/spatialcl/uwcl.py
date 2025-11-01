@@ -1,5 +1,5 @@
 from typing import Literal
-from split.utils import*
+from src.utils import*
 from torch import Tensor
 from .clearn import compute_weights_from_uncertainty
 from .dto.mask import Maskdto
@@ -156,7 +156,7 @@ class DenseContrastiveLoss:
         return loss.mean()
         
 # Example usage with co_cluster_uncertainty function
-def create_dense_contrastive_loss_with_co_cluster(
+def build_uwcl(
     z :  Tensor,
     epoch:int ,
     temperature: float = 0.1,
