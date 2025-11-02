@@ -1,11 +1,11 @@
 from typing import Literal
 from utils import*
-from .clearn import compute_weights_from_uncertainty
-from .dto.mask import Maskdto
-from .dto.config import ConfigDto
-from .dto.cldto import clDto
-from .dto.image_label_dto import ImageLabelDTO
-from .uncertainty import co_cluster_uncertainty
+from spatialcl.clearn import compute_weights_from_uncertainty
+from spatialcl._dto.mask import Maskdto
+from spatialcl._dto.config import ConfigDto
+from spatialcl._dto.cldto import clDto
+from spatialcl._dto.image_label_dto import ImageLabelDTO
+from spatialcl.uncertainty import co_cluster_uncertainty
 
 class DenseContrastiveLoss:
     """Senior implementation of dense contrastive loss with uncertainty weighting."""
@@ -188,4 +188,4 @@ def build_uwcl(
         )
     return dense_contrastive(z, epoch)
         
-    
+__all__ = ["build_uwcl"]  # Only this function is public

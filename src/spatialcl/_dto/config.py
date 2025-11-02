@@ -1,5 +1,5 @@
 from typing import Literal
-from utils import*
+from utils import *
 class ConfigDto:
     """
     Data Transfer Object for configuration parameters and tensor dimensions.

@@ -1,7 +1,7 @@
 
 import torch
 from torch import Tensor  
-from .dto.config import ConfigDto
+from spatialcl._dto.config import ConfigDto
 
 class UncertaintyWeightComputer:
     """
@@ -129,3 +129,4 @@ def compute_weights_from_uncertainty(
     )
     return compute_weight(uncertainty, epoch)
      
+__all__ = ["compute_weights_from_uncertainty"]  # Only this function is public

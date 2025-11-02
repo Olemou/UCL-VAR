@@ -1,5 +1,5 @@
 from utils import*
-from config.disco_config import load_config
+from spatialcl._config.disco_config import load_config
 from typing import Dict
 from dataclasses import field
 
@@ -86,3 +86,4 @@ class ImageLabelDTO:
             img_ids_flat = self.img_id.repeat_interleave(V)
 
         return z_flat, labels_flat, img_ids_flat
+

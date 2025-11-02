@@ -1,5 +1,5 @@
 from utils import*
-from .dto.image_label_dto import ImageLabelDTO
+from spatialcl._dto.image_label_dto import ImageLabelDTO
  
 class CoClusterUncertainty:
     """Compute masked uncertainty between embeddings using Subjective Logic."""
@@ -63,3 +63,4 @@ def co_cluster_uncertainty(
         """
     computer = CoClusterUncertainty(image_label_dto=image_label_dto,prior_weight=prior_weight)
     return computer(z,image_label_dto)
+__all__ = ["co_cluster_uncertainty"]  # Only this function is public

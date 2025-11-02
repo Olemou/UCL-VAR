@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "spatialcl"
-version = "0.1.0"
+version = "0.2.1"
 description = "Plug-and-play contrastive learning framework designed for spatially structured modalities."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -53,8 +53,7 @@ ucl-var-eval = "split.disco.evaluate:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["spatialcl*"]
-
+include = ["spatial*","thermal*","utils*"]
 
 [tool.setuptools.package-data]
 "spatialcl.config" = ["*.yaml"]

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 import torch
-from dto.config import ConfigDto
+from .config import ConfigDto
 
 @dataclass
 class clDto:

@@ -7,10 +7,10 @@ import importlib.resources as pkg_resources
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
-def get_config_path(config_name: str = "disco.yaml") -> str:
+def get_config_path(config_name: str = "parameter.yaml") -> str:
     try:
         # Try package-based access
-        return str(pkg_resources.files("split.disco.config").joinpath(config_name))
+        return str(pkg_resources.files("spatialcl._config").joinpath(config_name))
     except Exception:
         # Fallback to relative file location
         here = Path(__file__).resolve().parent
