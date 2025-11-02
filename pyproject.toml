@@ -54,10 +54,7 @@ ucl-var-eval = "split.disco.evaluate:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["spatialcl*"]
-exclude = [
-    "spatialcl/dto*",
-    "spatialcl/config*"
-]
+
 
 [tool.setuptools.package-data]
 "spatialcl.config" = ["*.yaml"]
