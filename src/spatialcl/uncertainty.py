@@ -1,4 +1,4 @@
-from src.utils import*
+from utils import*
 from .dto.image_label_dto import ImageLabelDTO
  
 class CoClusterUncertainty:
