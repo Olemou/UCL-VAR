@@ -9,8 +9,8 @@ class CoClusterUncertainty:
         self.prior_weight = prior_weight
         self.image_label_dto = image_label_dto
       
-    def __call__(self, z: torch.Tensor, image_label_dto:ImageLabelDTO) -> torch.Tensor:
-        return self.compute(z, image_label_dto)
+    def __call__(self, z: torch.Tensor) -> torch.Tensor:
+        return self.compute(z)
     
     def compute(self, z: torch.Tensor,) -> torch.Tensor:
         """Compute uncertainty matrix with label masking."""
@@ -31,7 +31,7 @@ class CoClusterUncertainty:
     
     def _similarity_to_evidence(self, sim: torch.Tensor) -> torch.Tensor:
         """Convert similarity to uncertainty using subjective logic."""
-        g_sim = sim,
+        g_sim = sim
         g_dsim = 1.0 - sim
         
         e_pos = F.softmax(g_sim, dim=1)
@@ -45,22 +45,25 @@ class CoClusterUncertainty:
 def co_cluster_uncertainty(
     z: torch.Tensor, 
     image_label_dto: ImageLabelDTO,
-    prior_weight : int = 2 
+    prior_weight : int = 2
 ) -> torch.Tensor:
     """
         Direct function interface for co-cluster uncertainty.
 
         Args:
-            Z (torch.Tensor): Embedding features tensor.
-            labels (torch.Tensor, optional): Corresponding class labels for each embedding.
-            img_ids (torch.Tensor, optional): Image identifiers for grouping instances.
-            prior_weight (float): Prior weight indicating how many times an instance
-                is assumed to be observed under a prior assumption.
-            others : 
-
+            Z (torch.Tensor): Embedding feature tensor of shape (B, D) or (B,V,D),
+                where B is the batch size, D is the embedding dimension and V le number of views.
+            image_label_dto (ImageLabelDTO): Data Transfer Object containing
+                sample metadata, including:
+                - `labels` (torch.Tensor): Class labels for each sample.
+                - `image_ids` (torch.Tensor): Unique identifiers for images or views.
+            prior_weight (int): Prior weighting factor indicating how many times
+                an instance is assumed to be observed under a prior assumption.
         Returns:
-            torch.Tensor: Co-cluster uncertainty matrix.
+            torch.Tensor: Co-cluster uncertainty matrix representing pairwise
+                uncertainty relationships between samples.
         """
-    computer = CoClusterUncertainty(image_label_dto=image_label_dto,prior_weight=prior_weight)
-    return computer(z,image_label_dto)
+
+    computer = CoClusterUncertainty(image_label_dto=image_label_dto,prior_weight = prior_weight)
+    return computer(z)
 __all__ = ["co_cluster_uncertainty"]  # Only this function is public

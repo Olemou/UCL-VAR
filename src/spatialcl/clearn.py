@@ -2,6 +2,8 @@
 import torch
 from torch import Tensor  
 from spatialcl._dto.config import ConfigDto
+from utils import *
+from typing import Literal
 
 class UncertaintyWeightComputer:
     """
@@ -58,7 +60,7 @@ class UncertaintyWeightComputer:
         """Fully vectorized implementation using torch's built-in ranking."""
         delta_t = epoch/self.config_dto.T
         ranks = self._compute_ranks_vectorized(u, descending=True)
-        phi_rho = ranks / (u.size(1) - 1 + self.eps)
+        phi_rho = ranks / (u.size(1) - 1 + self.config_dto.eps)
         
         return self._apply_lambda_formula(phi_rho, delta_t)
     
@@ -101,7 +103,7 @@ class UncertaintyWeightComputer:
         """Validate input tensors and parameters."""
         assert uncertainty.dim() == 2, f"Uncertainty must be 2D tensor, got {uncertainty.dim()}D"
         assert epoch >= 0, f"Epoch must be non-negative, got {epoch}"
-        assert epoch <= self.T, f"Epoch {epoch} exceeds total epochs {self.T}"
+        assert epoch <= self.config_dto.T , f"Epoch {epoch} exceeds total epochs {self.T}"
         
         _, M = uncertainty.shape
         assert M > 1, f"Uncertainty matrix must have at least 2 columns, got {M}"
@@ -109,7 +111,10 @@ class UncertaintyWeightComputer:
 def compute_weights_from_uncertainty(
     uncertainty: torch.Tensor,
     epoch: int,
-    config_dto : ConfigDto,
+    T: int = 100,
+    eps: Optional[float] = 1e-8,
+    device: Optional[torch.device] = None,
+    method: Literal["exp", "tanh"] = "exp",
 ) -> torch.Tensor:
     """
     Compute uncertainty-based weights using the specified method.
@@ -117,13 +122,21 @@ def compute_weights_from_uncertainty(
     Args:
         uncertainty (torch.Tensor): Uncertainty matrix of shape [N, M].
         epoch (int): Current training epoch.
-        config_dto (ConfigDto): Hyperparameters including T, device, same_img_weight, and method.
-        device (torch.device, optional): Target device ("cuda" or "cpu"). 
-            Overrides the device in config_dto if provided.
+        same_img_weight (Optional[float]): Weight assigned to same-image pairs.
+        T : Total number of epochs.
+        eps (Optional[float]): Small value for numerical stability.
+        device (Optional[torch.device]): Target device ("cuda" or "cpu").
+        method: Method used to compute uncertainty weights (e.g., "exp" or "tanh")
 
     Returns:
         torch.Tensor: Weight matrix of shape [N, M].
     """
+    config_dto = ConfigDto(
+        T = T,
+        device = device,
+        method = method,
+        eps = eps,
+    )
     compute_weight = UncertaintyWeightComputer(
         config_dto
     )

@@ -47,9 +47,6 @@ Documentation = "https://github.com/Olemou/SpatialCL/blob/master/README.md"
 Repository = "https://github.com/Olemou/SpatialCL"
 "Bug Tracker" = "https://github.com/Olemou/SpatialCL/issues"
 
-[project.scripts]
-ucl-var-train = "split.disco.train:main"
-ucl-var-eval = "split.disco.evaluate:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

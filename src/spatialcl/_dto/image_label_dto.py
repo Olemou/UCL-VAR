@@ -14,6 +14,7 @@ class ImageLabelDTO:
     """
     img_id: torch.Tensor
     label: torch.Tensor
+    eps = 1e-8
     device: Optional[torch.device] = None
     _B :int = field(default=64, init=False)
     _V :int = field(default=2, init=False)

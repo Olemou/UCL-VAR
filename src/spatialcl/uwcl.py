@@ -13,11 +13,9 @@ class DenseContrastiveLoss:
     def __init__(
         self,
         config_dto: ConfigDto,
-        cl_dto: clDto,
         image_label_dto: ImageLabelDTO,
     ):
         # Load configuration from YAML
-        self.cl_dto = cl_dto
         self.image_label_dto = image_label_dto
         self.config_dto = config_dto
     
@@ -49,13 +47,6 @@ class DenseContrastiveLoss:
             Scalar loss tensor
         """
         self._validate_inputs(z)
-        
-        # Compute uncertainty matrix if not provided
-        if u_batch is None:
-            raise ValueError(
-                    "Either u_batch must be provided"
-                )  
-        
         # Flatten and normalize features
         z_flat, labels_flat, img_ids_flat=self.image_label_dto.flatten_inputs(z)
 
@@ -77,7 +68,7 @@ class DenseContrastiveLoss:
         z: Tensor,
     ) -> None:
         """Validate input tensor shapes and properties."""
-        z_flat, labels_flat, img_ids_flat = self.cl_dto.get_config.flatten_inputs(z)
+        z_flat, labels_flat, img_ids_flat = self.image_label_dto.flatten_inputs(z)
         
         assert z_flat.dim() in [2, 3], f"z must be 2D or 3D tensor, got {z.dim()}D"
         assert labels_flat.dim() == 1, f"labels must be 1D tensor, got {labels_flat.dim()}D"
@@ -90,7 +81,7 @@ class DenseContrastiveLoss:
     
     def _compute_similarity_matrix(self, z_flat: Tensor) -> Tensor:
         """Compute pairwise cosine similarity matrix."""
-        return torch.matmul(z_flat, z_flat.T) / self.temperature
+        return torch.matmul(z_flat, z_flat.T) / self.config_dto.temperature
     
     def _compute_loss_per_batch(
         self,
@@ -120,7 +111,11 @@ class DenseContrastiveLoss:
                         )
         
         diff_img_weight = compute_weights_from_uncertainty(
-            u_batch, epoch, config_dto=self.config_dto
+            uncertainty=u_batch, epoch=epoch, T= self.config_dto.T,
+            method=self.config_dto.method,
+            device= self.config_dto.device,
+            eps = self.config_dto.eps
+            
         )
        
         pos_weights = (
@@ -136,11 +131,11 @@ class DenseContrastiveLoss:
         numerator = exp_sim * pos_weights
         # Weighted negative term with numerical stability
         exp_neg = exp_sim * masks.neg_mask.float()
-        neg_weights = exp_neg / (exp_neg.sum(dim=1, keepdim=True) + self.eps)
+        neg_weights = exp_neg / (exp_neg.sum(dim=1, keepdim=True) + self.config_dto.eps)
         neg_term = neg_weights * exp_sim*masks.neg_mask.float() 
         
         # Denominator: positive + negative terms
-        denominator = numerator + neg_term + self.eps
+        denominator = numerator + neg_term + self.config_dto.eps
 
         # Log-probabilities
          # Compute log(numerator / denominator) only over positive pairs
@@ -159,7 +154,6 @@ def build_uwcl(
     z :  Tensor,
     epoch:int ,
     temperature: float = 0.1,
-    same_img_weight: float = 1.0,
     T: int = 100,
     eps: float = 1e-12,
     device: Optional[torch.device] = None,
@@ -183,7 +177,7 @@ def build_uwcl(
     """
     
     dense_contrastive = DenseContrastiveLoss(
-            ConfigDto(temperature=temperature,same_img_weight= same_img_weight,T = T,eps=eps,device =device,method = method),
+            ConfigDto(temperature=temperature,T = T,eps=eps,device =device,method = method),
             ImageLabelDTO(img_id= img_ids,label=labels)
         )
     return dense_contrastive(z, epoch)

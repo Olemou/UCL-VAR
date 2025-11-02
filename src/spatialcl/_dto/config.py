@@ -16,9 +16,9 @@ class ConfigDto:
     def __init__(
         self,
         temperature: Optional[float] = None,
-        same_img_weight: Optional[float] = None,
-        T: Optional[int] = None,
-        eps: Optional[float] = None,
+        same_img_weight: Optional[float] = 1,
+        T: int = 100,
+        eps: Optional[float] = 1e-8,
         device: Optional[torch.device] = None,
         method: Literal["exp", "tanh"] = "exp",
     ):
