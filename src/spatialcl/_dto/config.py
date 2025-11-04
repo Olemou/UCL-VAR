@@ -1,5 +1,6 @@
-
 from utils import *
+
+
 class ConfigDto:
     """
     Data Transfer Object for configuration parameters and tensor dimensions.
@@ -10,8 +11,8 @@ class ConfigDto:
         T (Optional[int]): Total number of epochs.
         eps (Optional[float]): Small value for numerical stability.
         device (Optional[torch.device]): Target device ("cuda" or "cpu").
-       
-"""
+
+    """
 
     def __init__(
         self,

@@ -7,3 +7,17 @@ learning_mechanism:
     number_patch_or_single_view: 1
     minimum_dim_output: 2
     eps: 1e-12
+
+train_eval:
+  save_dir: "./checkpoints"
+  lr: 0.00009
+  batch_size: 32
+  epochs: 100
+  temperature: 0.1
+  embedding_dim: 128
+  backbone:
+    - "VIT-B"
+    - "VIT-Small"
+    - "VIT-Tiny"
+
+  mode: "contrastive"  # can be 'contrastive' or 'classification'
