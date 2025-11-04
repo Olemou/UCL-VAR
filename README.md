@@ -36,5 +36,5 @@ It robustly handles *intra-* and *inter-class variability*, enabling consistent 
 
 git clone https://github.com/Olemou/SpatialCL.git
 cd Spatialcl
-
+<pre> ```bash # This is a bash code block git clone https://github.com/your-username/spatialcl.git cd spatialcl ``` </pre>
 
