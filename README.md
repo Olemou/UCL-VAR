@@ -65,10 +65,10 @@ cd Spatialcl
 <pre>
 <code class="language-python">
  python -m venv venv
-   ---On Linux/macOS---
-    source venv/bin/activate
-    --On Windows---
-    venv\Scripts\activate
+---On Linux/macOS---
+source venv/bin/activate
+--On Windows---
+venv\Scripts\activate
 </code>
 </pre>
 </div>
@@ -77,7 +77,7 @@ cd Spatialcl
 <div align="left" style="max-width:50%; margin-left:10%;">
 <pre>
 <code class="language-python">
- pip install --upgrade pip
+pip install --upgrade pip
 pip install -r requirements.txt
 </code>
 </pre>
@@ -93,7 +93,7 @@ Let's suppose the image is loaded and readable.
 <div align="left" style="max-width:50%; margin-left:10%;">
 <pre>
 <code class="language-python">
-from Spatialcl.thermal import thermal_occlusion
+from Spatialcl.thermal import occlusion
 thermal_occlusion(
     img=image,
     mask_width_ratio=0.6,
@@ -104,11 +104,11 @@ thermal_occlusion(
 </pre>
 </div>
 
-- *** 🎛️ Contrast***
+- ***🎛️ Contrast***
 <div align="left" style="margin-left:10%;">
 <pre>
 <code class="language-python">
-from Spatialcl.thermal import thermal_contrast
+from Spatialcl.thermal import contrast
 thermal_contrast(
    img = image, alpha = 0.8
 )
@@ -116,7 +116,7 @@ thermal_contrast(
 </pre>
 </div>
 
-- *** ☀️ Mixed Brightness & Contrast***
+- ***☀️ Mixed Brightness & Contrast***
 <div align="left" style="margin-left:10%;">
 <pre>
 <code class="language-python">
@@ -130,11 +130,11 @@ brightness_contrast(
 </pre>
 </div>
 
-- ***🌀 Mixed Brightness & Contrast***
+- ***🌀 Elastic Transfrormation***
 <div align="left" style="margin-left:10%;">
 <pre>
 <code class="language-python">
-from Spatialcl.thermal import elastic_transform
+from Spatialcl.thermal import elastic
 elastic_transform(
      img = image,
      alpha = 1
@@ -144,4 +144,54 @@ elastic_transform(
 </pre>
 </div>
 
+### 🚀 Compute Learning Mechanism
 
+- ***🔸 uncertainty weight under weak supervision***
+ *We computed uncertainty weights for  intra-class variability and class imbalance handling*
+ <div align="left" style="margin-left:10%;">
+<pre>
+<code class="language-python">
+from Spatialcl.uncertainty import co_cluster_uncertainty
+z = torch.randn(4, 8)
+img_id = torch.tensor([0, 1, 2, 3]) (img_id: augmented views of same image ids)
+labels = torch.tensor([0, 1, 0, 1])
+prior_weight = 2
+uncertainy = co_cluster_uncertainty(z, labels, img_id)
+</code>
+</pre>
+</div>
+
+- ***🔸Curriculum learning mechanism***
+ *The initially computed uncertainty weights are dynamically reweighted to guide the model through a progressive learning process, allowing it to first focus on easier examples and gradually incorporate harder, more ambiguous cases.*
+ <div align="left" style="margin-left:10%;">
+<pre>
+<code class="language-python">
+from Spatialcl.uncertainty import compute_weights_from_uncertainty
+progressive_reweighting = compute_weights_from_uncertainty(
+            uncertainty=uncertainty_matrix,
+            epoch=0,
+            T = 100
+        )
+</code>
+</pre>
+</div>
+
+- ***🔸Global Loss function in the learning process***
+In this part, we compute the global learning mechanism in a single step, without intermediate stages. This approach simultaneously addresses challenges such as class imbalance, intra-class variability, and low inter-class similarity. It allows multiple modalities thermal, RGB, and RGB-D etc. to capture and reason about uncertainty effectively. By applying this mechanism to the spill dataset, which encompasses the full complexity of the data, the model is exposed to realistic challenges, highlighting the difficulties described earlier.
+<div align="left" style="margin-left:10%;">
+<pre>
+<code class="language-python">
+from Spatialcl.uncertainty import build_uwcl
+img_id = torch.tensor([0, 1, 2, 1])
+label = torch.tensor([0, 1, 0, 1])
+z = torch.randn(4, 8)
+output = build_uwcl(z=z, img_ids=img_id, labels=label, epoch=0, device="cpu")
+</code>
+</pre>
+</div>
+
+## Training & Evaluation 
+coming Soon !
+
+## Results
+Coming soon
