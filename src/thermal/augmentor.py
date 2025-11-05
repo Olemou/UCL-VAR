@@ -69,13 +69,13 @@ class ThermalAugmentor:
 
     def brightness_contrast(
         self,
-        x: Image.Image,
+        img: Image.Image,
         brightness: Optional[float] = None,
         contrast: Optional[float] = None,
     ) -> Image.Image:
 
         # Convert image to NumPy array
-        arr = np.array(x).astype(np.float32)
+        arr = np.array(img).astype(np.float32)
         # Validate or randomize parameters
         if brightness is None:
             brightness = np.random.uniform(0.8, 1.4)
@@ -95,7 +95,7 @@ class ThermalAugmentor:
 
     # contrast augmentation
     def thermal_contrast(
-        self, x: Image.Image, alpha: float | None = None
+        self, img: Image.Image, alpha: float | None = None
     ) -> Image.Image:
 
         if alpha is not None and alpha > 1:
@@ -107,20 +107,20 @@ class ThermalAugmentor:
             else np.random.uniform(alpha, 1 + alpha)
         )
         # Apply the contrast adjustment
-        x_arr = np.asarray(x, dtype=np.float32)
+        x_arr = np.asarray(img, dtype=np.float32)
         x_contrasted = np.clip(x_arr * factor, 0, 255).astype(np.uint8)
 
         return Image.fromarray(x_contrasted)
 
     def elastic_transform(
         self,
-        x: Image.Image,
+        img: Image.Image,
         alpha: Optional[float] = None,
         sigma: Optional[float] = None,
         random_state: Optional[np.random.RandomState] = None,
     ) -> Image.Image:
 
-        arr = np.array(x)
+        arr = np.array(img)
         alpha = alpha if alpha is not None else self.image_size * 0.08
         sigma = sigma if sigma is not None else self.image_size * 0.08
         random_state = random_state or np.random.RandomState(None)
@@ -165,7 +165,7 @@ class ThermalAugmentor:
 _default_augmentor = ThermalAugmentor()
 
 
-def thermal_erase(img: Image.Image, **kwargs) -> Image.Image:
+def occlusion(img: Image.Image, **kwargs) -> Image.Image:
     """
     Directly apply thermal erase on an image without instantiating the class.
 
@@ -186,7 +186,7 @@ def thermal_erase(img: Image.Image, **kwargs) -> Image.Image:
     return _default_augmentor.thermal_erase(img, **kwargs)
 
 
-def thermal_contrast(img: Image.Image, **kwargs) -> Image.Image:
+def contrast(img: Image.Image, **kwargs) -> Image.Image:
     """
     Directly apply thermal contrast adjustment on an image without instantiating the class.
 
@@ -236,7 +236,7 @@ def brightness_contrast(img: Image.Image, **kwargs) -> Image.Image:
     return _default_augmentor.brightness_contrast(img, **kwargs)
 
 
-def elastic_transform(img: Image.Image, **kwargs) -> Image.Image:
+def elastic(img: Image.Image, **kwargs) -> Image.Image:
     """
     Directly apply elastic transformation on an image without instantiating the class.
 

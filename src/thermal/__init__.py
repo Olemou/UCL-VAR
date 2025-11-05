@@ -6,6 +6,6 @@ for thermal and RGB modalities.
 """
 
 
-from .augmentor import ThermalAugmentor, thermal_erase, thermal_contrast,brightness_contrast, elastic_transform
+from .augmentor import ThermalAugmentor, occlusion, contrast,brightness_contrast, elastic
 
-__all__ = ["ThermalAugmentor", "thermal_erase","thermal_contrast","brightness_contrast","elastic_transform"]
+__all__ = ["ThermalAugmentor", "occlusion","contrast","brightness_contrast","elastic"]

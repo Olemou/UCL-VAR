@@ -1,4 +1,4 @@
-# 🧭 Overview
+## 🧭 Overview
 
 **SpatialCL** is a *plug-and-play contrastive learning framework* designed for spatially structured modalities, including **RGB**, **thermal**, **RGB-D** data etc.
 It robustly handles *intra-* and *inter-class variability*, enabling consistent embeddings across challenging datasets.
@@ -7,7 +7,7 @@ It robustly handles *intra-* and *inter-class variability*, enabling consistent 
 
 ⚙️ While the framework is **modality-agnostic** and can be extended to other dense spatial tasks, extending **SpatialCL** to sparse, graph-structured data such as **skeletons** represents an exciting direction for future work.
 
-# Framework Architecture
+## Framework Architecture
   <p align="center">
   <img src="assets/framework.png" alt="SpatialCL Architecture" width="850"/>
 </p>
@@ -31,7 +31,7 @@ DISCO (Detection of Indoor Spills with Contrastive learning) addresses one of th
 - ✨ *A scarcity of reliable labeled examples; and*
 - ✨ *environmental disturbances such as illumination changes, surface reflections, and sensor noise*.
 
-# Key Features
+## Key Features
 - ✅ Handles **ambiguous and irregular objects** that standard vision models struggle with
 - ✅ Supports: **RGB, thermal, depth, etc.**
 - ✅ **Memory-optimized** contrastive learning for faster training
@@ -41,28 +41,47 @@ DISCO (Detection of Indoor Spills with Contrastive learning) addresses one of th
 
 ## 📦Installation
 
-###  PyPI
+*** - PyPI ***
+<div align="left" style="max-width:50%; margin-left:10%;">
 <pre>
+<code class="language-python">
 pip install -i https://test.pypi.org/simple/ spatialcl==0.3.4
+</code>
 </pre>
-### Clone the repository
+</div>
+
+*** - Clone the repository ***
+<div align="left" style="max-width:50%; margin-left:10%;">
 <pre>
+<code class="language-python">
 git clone https://github.com/Olemou/SpatialCL.git 
 cd Spatialcl
+</code>
 </pre>
-###  Create and activate a virtual environment (optional):
+</div>
+
+*** - Create and activate a virtual environment (optional): ***
+ <div align="left" style="max-width:50%; margin-left:10%;">
 <pre>
-  python -m venv venv
+<code class="language-python">
+ python -m venv venv
    ---On Linux/macOS---
     source venv/bin/activate
     --On Windows---
     venv\Scripts\activate
- </pre>  
- ###  Install dependencies:
-<pre> 
-pip install --upgrade pip
-pip install -r requirements.txt
+</code>
 </pre>
+</div>
+
+ *** - Install dependencies: ****
+<div align="left" style="max-width:50%; margin-left:10%;">
+<pre>
+<code class="language-python">
+ pip install --upgrade pip
+pip install -r requirements.txt
+</code>
+</pre>
+</div>
 
 ## 🎯 Usage of SpatialCL 
 *After installing SpatialCL via ***pip***, you can leverage its comprehensive functionalities.*
@@ -70,8 +89,8 @@ pip install -r requirements.txt
 ### 🚀 Thermal Augmentation
 Let's suppose the image is loaded and readable.
 
-**🧩Occlusion**
-<div align="left" style="max-width:80%; margin-left:10%;">
+*** - 🧩 Occlusion ***
+<div align="left" style="max-width:50%; margin-left:10%;">
 <pre>
 <code class="language-python">
 from Spatialcl.thermal import thermal_occlusion
@@ -85,8 +104,8 @@ thermal_occlusion(
 </pre>
 </div>
 
-**Contrast**
-<div align="left" style="max-width:80%; margin-left:10%;">
+*** - 🎛️ Contrast ***
+<div align="left" style="max-width:50%; margin-left:10%;">
 <pre>
 <code class="language-python">
 from Spatialcl.thermal import thermal_contrast
@@ -97,8 +116,8 @@ thermal_contrast(
 </pre>
 </div>
 
-**mixte brightness and contrast**
-<div align="left" style="max-width:80%; margin-left:10%;">
+*** - ☀️ Mixed Brightness & Contrast ***
+<div align="left" style="max-width:50%; margin-left:10%;">
 <pre>
 <code class="language-python">
 from Spatialcl.thermal import brightness_contrast
@@ -111,5 +130,18 @@ brightness_contrast(
 </pre>
 </div>
 
+*** - 🌀 Mixed Brightness & Contrast ***
+<div align="left" style="max-width:50%; margin-left:10%;">
+<pre>
+<code class="language-python">
+from Spatialcl.thermal import elastic_transform
+elastic_transform(
+     img = image,
+     alpha = 1
+     sigma = 0.8,
+)
+</code>
+</pre>
+</div>
 
 
