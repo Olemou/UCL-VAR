@@ -86,8 +86,7 @@ def one_epoch_train(
     train_loader: DataLoader,
     optimizer: torch.optim.Optimizer,
     device: torch.device,
-    temperature: float = 0.1,
-    total_epoch: int = 100,
+    args
 ):
     """One epoch training loop."""
     model.train()
@@ -112,8 +111,8 @@ def one_epoch_train(
             labels=labels,
             img_ids=img_ids,
             device=device,
-            temperature=temperature,
-            T=total_epoch,
+            temperature=args.temperature,
+            T=args.num_epochs,
         )
         loss.backward()
         optimizer.step()
@@ -129,8 +128,7 @@ def one_eval_epoch(
     model: torch.nn.Module,
     val_loader: DataLoader,
     device: torch.device,
-    temperature: float = 0.1,
-    total_epoch: int = 100,
+    args
 ):
     """One epoch evaluation loop."""
     model.eval()
@@ -154,8 +152,8 @@ def one_eval_epoch(
                 labels=labels,
                 img_ids=img_ids,
                 device=device,
-                temperature=temperature,
-                T=total_epoch,
+                temperature=args.temperature,
+                T=args.num_epochs,
             )
             total_loss += loss.item() * x1.size(0)
 
@@ -209,8 +207,8 @@ def main():
         cosine_schedule(
             epoch=epoch, max_epochs=args.num_epochs, warmup_epochs=args.warmup_epochs
         )
-        train_loss = one_epoch_train(model, train_loader, optimizer, device)
-        val_loss = one_eval_epoch(model, val_loader, device)
+        train_loss = one_epoch_train(model, train_loader, optimizer, device,args)
+        val_loss = one_eval_epoch(model, val_loader, device,args)
 
         logger.metric(epoch, train_loss, val_loss, optimizer)
 

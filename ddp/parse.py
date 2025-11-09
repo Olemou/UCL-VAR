@@ -42,7 +42,7 @@ def parse_ddp_args():
     parser.add_argument("--num_epochs", type=int, default=100)
     parser.add_argument("--warmup_epochs", type=int, default=10)
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("temperature", type=float, default=0.1)
+    parser.add_argument("--temperature", type=float, default=0.1)
 
     parser.add_argument("--root", type=str, default="./data")
     parser.add_argument("--vit_variant", type=str, default="base")
