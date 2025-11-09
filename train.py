@@ -205,9 +205,8 @@ def main():
         custom_model=model, model_size=args.vit_variant, device=device
     )
     optimizer = get_optimizer(model=weighted_model)
+    
     best_val_loss = float("inf")
-
-    logger.info(f"model on device: {device}")
 
     # --- Training loop ---
     logger.info("Beginning training loop...")

@@ -105,4 +105,4 @@ def load_pretrained_vit_weights(
                 init.zeros_(module.bias)
 
     print(f"🎯 Model '{timm_model_name}' successfully adapted and loaded.\n")
-    return custom_model
+    return custom_model.to(device)
