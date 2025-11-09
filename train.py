@@ -176,7 +176,7 @@ def main():
 
     """Main training setup for distributed or single-node training."""
     # --- DataLoaders & DDP setup ---
-    train_loader, val_loader,  = param_dataloader_init(args)
+    train_loader, val_loader,_  = param_dataloader_init(args)
 
     rank = get_rank() if torch.distributed.is_initialized() else 0
     logger = TrainLogger(log_dir="./logs", rank=rank)
@@ -225,7 +225,7 @@ def main():
                 },
                 is_best=is_best,
                 checkpoint_dir="./checkpoints",
-                filename="last.pth",
+                filename="best_last.pth",
             )
         else:
             logger.info("No improvement this epoch.")
