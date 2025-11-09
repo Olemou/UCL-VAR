@@ -6,25 +6,24 @@ import os
 import torch
 import numpy as np
 import random
+
+
 def setup_env():
     """Configure runtime environment variables dynamically."""
- 
+
     os.environ.setdefault("OMP_NUM_THREADS", "8")
     os.environ.setdefault("WORLD_SIZE", "1")
     os.environ.setdefault("RANK", "0")
     os.environ.setdefault("LOCAL_RANK", "0")
-    os.environ.setdefault("BATCH_SIZE","64")
-    os.environ.setdefault("NUMBER_NODE","1")
-    
+    os.environ.setdefault("BATCH_SIZE", "64")
+    os.environ.setdefault("NUMBER_NODE", "1")
+
     # Optional Hugging Face cache
     os.environ.setdefault("HF_HOME", "/tank/hf_tank")
-    
 
     # CUDA setup
-    if torch.cuda.is_available():
-        print(f"✅ CUDA detected: {torch.cuda.device_count()} device(s)")
-    else:
-        print("⚠️ CUDA not detected — training will run on CPU.")
+    if not torch.cuda.is_available():
+        raise (f"✅ CUDA not detected: {torch.cuda.device_count()} device(s)")
 
 
 def seed_everything(seed: int = 42):

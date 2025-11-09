@@ -5,6 +5,7 @@ from  ddp.env import setup_env, seed_everything
 from ddp.parse import parse_ddp_args,init_distributed_mode
 from utils.dataloader import get_datasets_and_loaders, ThermalAugmentation, RgbAugmentation
 from utils.config import ThermalAugConfig, RgbAugConfig
+from utils.logging import Logger
 from model.vit import  VisionTransformer
 from model.load_weight import load_pretrained_vit_weights
 from utils.scheduler import get_optimizer, cosine_schedule
@@ -90,20 +91,33 @@ def param_dataloader_init(
 def one_epoch_train(
     model: torch.nn.Module,
     train_loader: DataLoader,
-    criterion: torch.nn.Module,
     optimizer: torch.optim.Optimizer,
-    device: torch.device,   
+    device: torch.device,
+    temperature: float = 0.1,
+    total_epoch: int = 100   
 ):
     """One epoch training loop."""
     model.train()
     total_loss = 0.0
-    for (x1, x2), labels, _ in train_loader:
-        x1, x2, labels = x1.to(device), x2.to(device), labels.to(device)
+    for (x1, x2), labels, img_ids in train_loader:
+        x1, x2, labels,img_ids = x1.to(device), x2.to(device), labels.to(device), img_ids.to(device)
+        
+        images = torch.cat([x1, x2], dim=0)
+        labels = torch.cat([labels, labels], dim=0)
+        img_ids = torch.cat([img_ids, img_ids], dim=0)
 
         optimizer.zero_grad()
-        features1 = model(x1)
-        features2 = model(x2)
-        loss = criterion(features1, features2, labels)
+        z  = model(images)
+       
+        loss = build_uwcl(
+            z = z,
+            labels=labels,
+            img_ids=img_ids,
+            device=device,
+            temperature= temperature,
+            T = total_epoch
+            
+        )
         loss.backward()
         optimizer.step()
 
@@ -115,20 +129,23 @@ def one_epoch_train(
 def one_eval_epoch(
     model: torch.nn.Module,
     val_loader: DataLoader,
-    criterion: torch.nn.Module,
     device: torch.device,
+    temperature: float = 0.1,
+    total_epoch: int = 100
 ):
     """One epoch evaluation loop."""
     model.eval()
     total_loss = 0.0
     with torch.no_grad():
-        for (x1, x2), labels, _ in val_loader:
-            x1, x2, labels = x1.to(device), x2.to(device), labels.to(device)
+        for (x1, x2), labels, img_ids in val_loader:
+            x1, x2, labels,img_ids = x1.to(device), x2.to(device), labels.to(device), img_ids.to(device)
 
-            features1 = model(x1)
-            features2 = model(x2)
-            loss = criterion(features1, features2, labels)
-
+            images = torch.cat([x1, x2], dim=0)
+            labels = torch.cat([labels, labels], dim=0)
+            img_ids = torch.cat([img_ids, img_ids], dim=0)
+            
+            z  = model(images)
+            loss =  loss = build_uwcl( z = z,labels=labels,img_ids=img_ids, device=device, temperature= temperature,T = total_epoch)
             total_loss += loss.item() * x1.size(0)
 
     avg_loss = total_loss / len(val_loader.dataset)
@@ -144,7 +161,7 @@ def main(
    
     """Main training setup for distributed or single-node training."""
     # --- DataLoaders & DDP setup ---
-    train_loader, val_loader, test_loader, args = param_dataloader_init(
+    train_loader, val_loader, _, args = param_dataloader_init(
         root=root,
         dataset_class=dataset_class,
         modality=modality,
@@ -159,16 +176,29 @@ def main(
         device=device
     )
     optimizer = get_optimizer(model=weighted_model)
-    criterion = build_uwcl
+    rank = get_rank() if torch.distributed.is_initialized() else 0
+    logger = Logger(log_dir="./logs", rank=rank)
+    best_val_loss = float("inf")
 
-          
-   
-
+    logger.info("Starting training...")
     # --- Training loop ---
     for epoch in range(args.epochs):
-        cosine_schedule(epoch = epoch, max_epochs=  args.epochs, warmup_epochs= args.warmup_epochs)
+        cosine_schedule(epoch = epoch, max_epochs= args.epochs, warmup_epochs= args.warmup_epochs)
+        train_loss = one_epoch_train(model, train_loader, optimizer, device)
+        val_loss = one_eval_epoch(model, val_loader, device)
         
-        train_loss = one_epoch_train(model, train_loader, criterion, optimizer, device)
-        val_loss = one_eval_epoch(model, val_loader, criterion, device)
+        logger.metric(epoch, train_loss, val_loss, optimizer)
+        
+        if val_loss < best_val_loss:
+            logger.success("New best model found!")
+        else:
+            logger.info("No improvement this epoch.")
 
-       
+
+if __name__ == "__main__":
+    main(
+        root="./data",
+        dataset_class=datasets.CIFAR10,
+        vit_variant="base",
+        modality={"rgb": True, "thermal": False},
+    )

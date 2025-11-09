@@ -37,6 +37,7 @@ class ConDataset(Dataset):
         xj = self.transform(img) if self.transform else transforms.ToTensor()(img)
         return (xi, xj), label, idx
 
+
 # ------------------------------
 # Create datasets and dataloaders
 # ------------------------------
@@ -46,7 +47,7 @@ def get_datasets_and_loaders(
     transform=None,
     train_ratio=dataloadConfig().train_ratio,
     val_ratio=dataloadConfig().val_ratio,
-    seed= dataloadConfig().seed,
+    seed=dataloadConfig().seed,
 ):
     # Load base dataset
     if dataset_class is not None:
@@ -80,83 +81,100 @@ def get_datasets_and_loaders(
 
 
 # -----------------------------------------------------------------------------------------------
-#  Thermal modality 
+#  Thermal modality
 # -----------------------------------------------------------------------------------------------
 class ThermalAugmentation:
     def __init__(self, cfg: ThermalAugConfig):
-        self.cfg =cfg
+        self.cfg = cfg
         self.transform = self.build_transform()
 
     def build_transform(self):
-        return transforms.Compose([
-            transforms.Resize((self.cfg.image_size, self.cfg.image_size)),
-
-            # --- Combined geometric & photometric transforms ---
-            transforms.RandomOrder([
-                transforms.RandomApply([
-                    transforms.RandomAffine(
-                        self.cfg.degrees,
-                        self.cfg.translate,
-                        self.cfg.scale,
-                        self.cfg.shear
-                    )
-                        
-                       
-                ], p=self.cfg.random_affine_prob),
-
-                transforms.RandomApply([
-                    transforms.RandomRotation(degrees=self.cfg.random_rotation_degrees),
-                ], p=self.cfg.random_rotation_degrees_prob),
-
-                transforms.RandomApply([
-                    transforms.RandomResizedCrop(
-                        self.cfg.image_size,
-                        scale=self.cfg.resized_crop_scale,
-                        ratio=self.cfg.resized_crop_ratio
-                    )
-                ], p=self.cfg.random_crop_prob),
-            ]),
-
-            # --- Thermal-specific augmentations ---
-            transforms.RandomApply([
-                transforms.Lambda(lambda img: occlusion(
-                    img,
-                    mask_width_ratio=self.cfg.mask_width_ratio,
-                    mask_height_ratio=self.cfg.mask_height_ratio,
-                    max_attempts=self.cfg.max_attempts,
-                    erase_prob=self.cfg.erase_prob
-                ))
-            ], p=self.cfg.occlusion_prob),
-
-            # --- Flipping ---
-            transforms.RandomHorizontalFlip(p=self.cfg.horizontal_flip_prob),
-            transforms.RandomVerticalFlip(p=self.cfg.vertical_flip_prob),
-
-            # --- Tensor and normalization ---
-            transforms.ToTensor(),
-            transforms.Normalize(mean=self.cfg.mean, std=self.cfg.std)
-
-        ])
+        return transforms.Compose(
+            [
+                transforms.Resize((self.cfg.image_size, self.cfg.image_size)),
+                # --- Combined geometric & photometric transforms ---
+                transforms.RandomOrder(
+                    [
+                        transforms.RandomApply(
+                            [
+                                transforms.RandomAffine(
+                                    self.cfg.degrees,
+                                    self.cfg.translate,
+                                    self.cfg.scale,
+                                    self.cfg.shear,
+                                )
+                            ],
+                            p=self.cfg.random_affine_prob,
+                        ),
+                        transforms.RandomApply(
+                            [
+                                transforms.RandomRotation(
+                                    degrees=self.cfg.random_rotation_degrees
+                                ),
+                            ],
+                            p=self.cfg.random_rotation_degrees_prob,
+                        ),
+                        transforms.RandomApply(
+                            [
+                                transforms.RandomResizedCrop(
+                                    self.cfg.image_size,
+                                    scale=self.cfg.resized_crop_scale,
+                                    ratio=self.cfg.resized_crop_ratio,
+                                )
+                            ],
+                            p=self.cfg.random_crop_prob,
+                        ),
+                    ]
+                ),
+                # --- Thermal-specific augmentations ---
+                transforms.RandomApply(
+                    [
+                        transforms.Lambda(
+                            lambda img: occlusion(
+                                img,
+                                mask_width_ratio=self.cfg.mask_width_ratio,
+                                mask_height_ratio=self.cfg.mask_height_ratio,
+                                max_attempts=self.cfg.max_attempts,
+                                erase_prob=self.cfg.erase_prob,
+                            )
+                        )
+                    ],
+                    p=self.cfg.occlusion_prob,
+                ),
+                # --- Flipping ---
+                transforms.RandomHorizontalFlip(p=self.cfg.horizontal_flip_prob),
+                transforms.RandomVerticalFlip(p=self.cfg.vertical_flip_prob),
+                # --- Tensor and normalization ---
+                transforms.ToTensor(),
+                transforms.Normalize(mean=self.cfg.mean, std=self.cfg.std),
+            ]
+        )
 
     def __call__(self, img):
         return self.transform(img)
 
+
 # ------------------------------------------------------------------------------------------
-#  RGB modality 
+#  RGB modality
 # -------------------------------------------------------------------------------------------
+
 
 class RgbAugmentation:
     def __init__(self, cfg: RgbAugConfig):
-        self.cfg =cfg
+        self.cfg = cfg
         self.transform = self.build_transform()
 
     def build_transform(self):
-        return transforms.Compose([
-        transforms.RandomResizedCrop(self.cfg.image_size, scale=self.cfg.random_resized_crop_scale),
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        transforms.Normalize(mean = self.cfg.mean,std = self.cfg.std)
-    ])
-    
+        return transforms.Compose(
+            [
+                transforms.RandomResizedCrop(
+                    self.cfg.image_size, scale=self.cfg.random_resized_crop_scale
+                ),
+                transforms.RandomHorizontalFlip(),
+                transforms.ToTensor(),
+                transforms.Normalize(mean=self.cfg.mean, std=self.cfg.std),
+            ]
+        )
+
     def __call__(self, img):
         return self.transform(img)

@@ -3,18 +3,16 @@ import torch.nn as nn
 import torch.nn.init as init
 import torch.utils.checkpoint as cp
 from timm.models.vision_transformer import trunc_normal_
-from functools import partial
-
 
 # -------------------------
 # Vision Transformer Presets
 # -------------------------
 VIT_CONFIGS = {
-    "tiny":  dict(embed_dim=192, depth=12, num_heads=3, mlp_ratio=4.0),
+    "tiny": dict(embed_dim=192, depth=12, num_heads=3, mlp_ratio=4.0),
     "small": dict(embed_dim=384, depth=12, num_heads=6, mlp_ratio=4.0),
-    "base":  dict(embed_dim=768, depth=12, num_heads=12, mlp_ratio=4.0),
+    "base": dict(embed_dim=768, depth=12, num_heads=12, mlp_ratio=4.0),
     "large": dict(embed_dim=1024, depth=24, num_heads=16, mlp_ratio=4.0),
-    "huge":  dict(embed_dim=1280, depth=32, num_heads=16, mlp_ratio=4.0),
+    "huge": dict(embed_dim=1280, depth=32, num_heads=16, mlp_ratio=4.0),
 }
 
 
@@ -29,7 +27,7 @@ class Attention(nn.Module):
         self.dim_per_head = embed_dim // num_heads
 
         self.qkv = nn.Linear(embed_dim, 3 * embed_dim, bias=qkv_bias)
-        self.scale = self.dim_per_head ** -0.5
+        self.scale = self.dim_per_head**-0.5
         self.proj = nn.Linear(embed_dim, embed_dim)
         self.attn_map = None  # for visualization/debugging
 
@@ -52,14 +50,15 @@ class PatchDropout(nn.Module):
     """
     https://arxiv.org/abs/2212.00794
     """
+
     def __init__(self, prob=0.1, exclude_first_token=True):
         super().__init__()
-        assert 0 <= prob < 1.
+        assert 0 <= prob < 1.0
         self.prob = prob
         self.exclude_first_token = exclude_first_token
 
     def forward(self, x):
-        if not self.training or self.prob == 0.:
+        if not self.training or self.prob == 0.0:
             return x
 
         if self.exclude_first_token:
@@ -117,7 +116,9 @@ class Block(nn.Module):
 class PatchEmbed(nn.Module):
     def __init__(self, img_size=224, patch_size=16, in_chans=3, embed_dim=768):
         super().__init__()
-        self.proj = nn.Conv2d(in_chans, embed_dim, kernel_size=patch_size, stride=patch_size)
+        self.proj = nn.Conv2d(
+            in_chans, embed_dim, kernel_size=patch_size, stride=patch_size
+        )
         self.num_patches = (img_size // patch_size) ** 2
 
     def forward(self, x):
@@ -131,7 +132,7 @@ class PatchEmbed(nn.Module):
 class VisionTransformer(nn.Module):
     def __init__(
         self,
-        variant: str = "base",           # 'tiny', 'small', 'base', 'large', 'huge'
+        variant: str = "base",  # 'tiny', 'small', 'base', 'large', 'huge'
         img_size=224,
         patch_size=16,
         in_chans=3,
@@ -139,15 +140,20 @@ class VisionTransformer(nn.Module):
         drop_rate=0.1,
         qkv_bias=True,
         use_checkpoint=True,
-        head_hidden_dim=None
+        head_hidden_dim=None,
     ):
         super().__init__()
-        assert variant in VIT_CONFIGS, f"Unknown variant '{variant}', choose from {list(VIT_CONFIGS.keys())}"
+        assert (
+            variant in VIT_CONFIGS
+        ), f"Unknown variant '{variant}', choose from {list(VIT_CONFIGS.keys())}"
 
         # Load configuration
         cfg = VIT_CONFIGS[variant]
         embed_dim, depth, num_heads, mlp_ratio = (
-            cfg["embed_dim"], cfg["depth"], cfg["num_heads"], cfg["mlp_ratio"]
+            cfg["embed_dim"],
+            cfg["depth"],
+            cfg["num_heads"],
+            cfg["mlp_ratio"],
         )
 
         self.patch_embed = PatchEmbed(img_size, patch_size, in_chans, embed_dim)
@@ -163,10 +169,12 @@ class VisionTransformer(nn.Module):
         self.patch_dropout = PatchDropout(patch_dropout_prob)
 
         # Transformer encoder
-        self.blocks = nn.Sequential(*[
-            Block(embed_dim, num_heads, mlp_ratio, qkv_bias, drop_rate)
-            for _ in range(depth)
-        ])
+        self.blocks = nn.Sequential(
+            *[
+                Block(embed_dim, num_heads, mlp_ratio, qkv_bias, drop_rate)
+                for _ in range(depth)
+            ]
+        )
 
         self.norm = nn.LayerNorm(embed_dim)
 
@@ -175,13 +183,13 @@ class VisionTransformer(nn.Module):
         self.head = nn.Linear(embed_dim, head_dim)
 
         # Initialization
-        trunc_normal_(self.pos_embed, std=.02)
-        trunc_normal_(self.cls_token, std=.02)
+        trunc_normal_(self.pos_embed, std=0.02)
+        trunc_normal_(self.cls_token, std=0.02)
         self.apply(self._init_weights)
 
     def _init_weights(self, m):
         if isinstance(m, nn.Linear):
-            trunc_normal_(m.weight, std=.02)
+            trunc_normal_(m.weight, std=0.02)
             if m.bias is not None:
                 nn.init.zeros_(m.bias)
         elif isinstance(m, nn.LayerNorm):
@@ -203,5 +211,5 @@ class VisionTransformer(nn.Module):
                 x = blk(x)
 
         x = self.norm(x)
-        
+
         return self.head(x[:, 0])
