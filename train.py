@@ -219,6 +219,7 @@ def main():
         val_loss = one_eval_epoch(model, val_loader, device, epoch,args)
 
         logger.metric(epoch, train_loss, val_loss, optimizer)
+        logger.info(f"Epoch {epoch}: train_loss={train_loss}, val_loss={val_loss}")
 
         if val_loss < best_val_loss:
             logger.success("New best model found!")

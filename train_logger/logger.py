@@ -68,9 +68,11 @@ class TrainLogger:
         """Convenient formatted logging for training metrics."""
         if self.rank == 0:
             lrs = [group['lr'] for group in optimizer.param_groups]
-            msg = f"Epoch {epoch}: Train Loss={train_loss:.4f}, Val Loss={val_loss:.4f}, LR={lrs:.6f}"
+            lr_str = ", ".join([f"{lr:.6f}" for lr in lrs])
+            msg = f"Epoch {epoch}: Train Loss={train_loss:.4f}, Val Loss={val_loss:.4f}, LR=[{lr_str}]"
             print(colored(f"[METRIC] {msg}", "magenta"))
             logging.info(msg)
+
 
     def save_message(self, msg: str):
         """Write arbitrary message to log file."""
