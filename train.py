@@ -86,6 +86,7 @@ def one_epoch_train(
     train_loader: DataLoader,
     optimizer: torch.optim.Optimizer,
     device: torch.device,
+    epoch: int,
     args
 ):
     """One epoch training loop."""
@@ -109,6 +110,7 @@ def one_epoch_train(
         loss = build_uwcl(
             z=z,
             labels=labels,
+            epoch = epoch,
             img_ids=img_ids,
             device=device,
             temperature=args.temperature,
@@ -128,6 +130,7 @@ def one_eval_epoch(
     model: torch.nn.Module,
     val_loader: DataLoader,
     device: torch.device,
+    epoch: int,
     args
 ):
     """One epoch evaluation loop."""
@@ -149,6 +152,7 @@ def one_eval_epoch(
             z = model(images)
             loss = loss = build_uwcl(
                 z=z,
+                epoch= epoch,
                 labels=labels,
                 img_ids=img_ids,
                 device=device,
@@ -192,6 +196,7 @@ def main():
         model = VisionTransformer(variant=args.vit_variant).to(
             torch.device("cuda" if torch.cuda.is_available() else "cpu")
         )
+        logger.info("Normal training, Distributed training not initialized.")
     device = get_model_device(model)
     weighted_model = load_pretrained_vit_weights(
         custom_model=model, model_size=args.vit_variant, device=device
@@ -208,8 +213,8 @@ def main():
             epoch=epoch, optimizer=optimizer,
             max_epochs=args.num_epochs, warmup_epochs=args.warmup_epochs
         )
-        train_loss = one_epoch_train(model, train_loader, optimizer, device,args)
-        val_loss = one_eval_epoch(model, val_loader, device,args)
+        train_loss = one_epoch_train(model, train_loader, optimizer, device, epoch,args)
+        val_loss = one_eval_epoch(model, val_loader, device, epoch,args)
 
         logger.metric(epoch, train_loss, val_loss, optimizer)
 
