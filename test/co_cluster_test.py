@@ -1,8 +1,6 @@
 import torch
 import unittest
 from spatialcl.uncertainty import co_cluster_uncertainty
-from spatialcl._dto.image_label_dto import ImageLabelDTO
-
 
 class TestCoCluster(unittest.TestCase):
     def test_basic(self):
