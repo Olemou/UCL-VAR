@@ -17,6 +17,7 @@ def param_dataloader_init(
     root: str = None,
     dataset_class=None,
     modality: dict = {"rgb": True, "thermal": False},
+    is_distributed: bool = False,
 ):
     """Main training setup for distributed or single-node training."""
     # --- Environment setup ---
@@ -25,7 +26,8 @@ def param_dataloader_init(
 
     # --- Distributed setup ---
     args = parse_ddp_args()
-    init_distributed_mode(args)
+    if is_distributed:
+        init_distributed_mode(args)
 
     # --- Select transformation based on modality ---
     if modality.get("rgb", False):
@@ -156,6 +158,7 @@ def main(
     dataset_class=None,
     vit_varaint: str = "base",
     modality: dict = {"rgb": True, "thermal": False},
+    is_distributed: bool = False,
 ):
    
     """Main training setup for distributed or single-node training."""
@@ -164,6 +167,7 @@ def main(
         root=root,
         dataset_class=dataset_class,
         modality=modality,
+        is_distributed=is_distributed,
     )
     
     rank = get_rank() if torch.distributed.is_initialized() else 0
@@ -171,7 +175,15 @@ def main(
     
     logger.info("Starting training...")
     # --- Model, criterion, optimizer ---
-    model = wrap_model(VisionTransformer(variant=vit_varaint))
+    if is_dist():
+        logger.info(
+            f"Distributed training initialized. World Size: {get_world_size()}, Rank: {get_rank()}"
+        )
+        model = wrap_model(VisionTransformer(variant=vit_varaint))
+    else:
+        model = VisionTransformer(variant=vit_varaint).to(
+            torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        )
     device = get_model_device(model)
     weighted_model = load_pretrained_vit_weights(
         custom_model=model,
@@ -217,4 +229,5 @@ if __name__ == "__main__":
         dataset_class=datasets.CIFAR10,
         vit_variant="base",
         modality={"rgb": True, "thermal": False},
+        is_distributed=False,
     )
