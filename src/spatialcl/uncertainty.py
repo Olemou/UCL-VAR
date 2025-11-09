@@ -1,4 +1,4 @@
-from clr_utils import *
+from clr_utils import*
 from spatialcl._dto.image_label_dto import ImageLabelDTO
 
 
