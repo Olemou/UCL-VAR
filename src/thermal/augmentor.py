@@ -1,4 +1,3 @@
-
 from clr_utils import *
 class ThermalAugmentor:
     def __init__(
