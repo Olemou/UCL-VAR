@@ -228,7 +228,7 @@ torchrun \
 </pre>
 </div>
 
-# 🅓 Results
+# 🅓 Results (DISCO)
 ### 1️⃣ <b> Pretrained customize Vit-base </b>
 <table>
   <tr>
@@ -246,12 +246,26 @@ torchrun \
   </tr>
 </table>
 
-# 🅔 Visualization
+# 🅔 Visualization (DISCO)
 ### 1️⃣ <b> Original vs Attention-Map </b>
-<p align="center">
-  <img src="assets/hot_water.png" alt="Image 1" width="250"/>
-  <img src="assets/hot_last_block.png" alt="Image 2" width="250"/>
-  <img src="assets/hot_attention_rollout.png" alt="Image 3" width="250"/>
-</p>
+<table align="center">
+  <tr>
+    <td align="center"><b>Hot Water</b></td>
+    <td align="center"><b>Last Block</b></td>
+    <td align="center"><b>Attention Rollout</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/hot_water.png" alt="Hot Water" width="300"/></td>
+    <td align="center"><img src="assets/hot_last_block.png" alt="Last Block" width="250"/></td>
+    <td align="center"><img src="assets/hot_attention_rollout.png" alt="Attention Rollout" width="250"/></td>
+  </tr>
+</table>
+
+
+# 🅕 Beyond DISCO / SpatialCL applied to Anomaly Detection 
+## key  features
+- ✅ Handle  **class level variability** for downstream tasks
+- ✅ Handles **class imbalance**
+  
 
 
