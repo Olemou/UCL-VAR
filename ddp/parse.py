@@ -2,7 +2,8 @@ import os
 import argparse
 import torch.distributed as dist
 import torch
-from utils import *
+from torchvision import datasets
+from clr_utils import *
 
 
 def parse_ddp_args():
@@ -51,7 +52,7 @@ def parse_ddp_args():
     )
     parser.add_argument(
         "--is_distributed",
-        action="store_true",
+        default= False  ,
         help="Enable DistributedDataParallel training",
     )
     parser.add_argument("--dataset_class",  default=datasets.CIFAR10)
