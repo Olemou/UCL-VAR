@@ -200,8 +200,6 @@ output = build_uwcl(z=z, img_ids=img_id, labels=label, epoch=0, device="cpu")
 <div align="left" style="margin-left:10%;">
 <pre>
 <code class="language-python">
-
-***example***
 python train.py --batch_size 32 --num_workers 4 --root ./data --vit_variant base --temperatue 0.1 --num_epochs 50
 </code>
 </pre>
@@ -212,8 +210,6 @@ python train.py --batch_size 32 --num_workers 4 --root ./data --vit_variant base
 <div align="left" style="margin-left:10%;">
 <pre>
 <code class="language-python">
-
-***example***
 torchrun \
  --nnodes=1 \
   --nproc_per_node= 1 \
