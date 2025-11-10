@@ -41,7 +41,7 @@ DISCO (Detection of Indoor Spills with Contrastive learning) addresses one of th
 
 ## 📦Installation
 
-# 🅐 local environment setup
+# 🅐 Local Environment Setup
 
 - ***1️⃣ ***<b>Clone the repository</b>
 <div align="left" style="margin-left:10%; height:30%;">
@@ -75,7 +75,7 @@ venv\Scripts\activate.bat
 </pre>
 </div>
 
- - ***3️⃣***<b>Install dependencie:</b>
+ - ***3️⃣*** <b>Install dependencie:</b>
 <div align="left" style="max-width:50%; margin-left:10%;">
 <pre>
 <code class="language-python">
@@ -85,7 +85,7 @@ pip install -r requirements.txt
 </pre>
 </div>
 
- - ***4️⃣***<b>Install local package in editable mode:</b>
+ - ***4️⃣*** <b>Install local package in editable mode:</b>
 <div align="left" style="max-width:50%; margin-left:10%;">
 <pre>
 <code class="language-python">
@@ -94,63 +94,62 @@ pip install -e .
 </pre>
 </div>
 
-## 🎯 Usage of SpatialCL 
+# 🅑 Usage of SpatialCL 
+
+-  ### 1️⃣ PypI Installation ###
+<div align="left" style="margin-left:10%; height:30%;">
+<pre>
+<code>
+pip install -i https://test.pypi.org/simple/ spatialcl
+</code>
+</pre>
+</div>
 *After installing SpatialCL via ***pip***, you can leverage its comprehensive functionalities.*
 
-### 🚀 Thermal Augmentation
+### 2️⃣ Thermal Augmentation
 Let's suppose the image is loaded and readable.
 
-- ***🧩 Occlusion***
+- <b>🧩 Occlusion </b>
 <div align="left" style="max-width:50%; margin-left:10%;">
 <pre>
 <code class="language-python">
-from Spatialcl.thermal import occlusion
-thermal_occlusion(
-    img=image,
-    mask_width_ratio=0.6,
-    mask_height_ratio=0.2,
-    max_attempts=5,
-)
+     from Spatialcl.thermal import occlusion
+     aug_img = thermal_occlusion(
+     img=image,
+     mask_width_ratio=0.6,
+     mask_height_ratio=0.2,
+     max_attempts=5,
+     )
 </code>
 </pre>
 </div>
 
-- ***🎛️ Contrast***
+- <b>🎛️ Contrast </b>
 <div align="left" style="margin-left:10%;">
 <pre>
 <code class="language-python">
-from Spatialcl.thermal import contrast
-thermal_contrast(
-   img = image, alpha = 0.8
-)
+     from Spatialcl.thermal import contrast
+     aug_img = thermal_contrast(img = image, alpha = 0.8)
 </code>
 </pre>
 </div>
 
-- ***☀️ Mixed Brightness & Contrast***
+- <b>☀️ Mixed Brightness & Contrast<b>
 <div align="left" style="margin-left:10%;">
 <pre>
 <code class="language-python">
-from Spatialcl.thermal import brightness_contrast
-brightness_contrast(
-     img = image,
-     brightness = 1
-     contrast = 0.6,
-)
+     from Spatialcl.thermal import brightness_contrast
+     aug_img = brightness_contrast(mg = image,brightness = 1, contrast = 0.6)
 </code>
 </pre>
 </div>
 
-- ***🌀 Elastic Transfrormation***
+- <b>🌀 Elastic Transfrormation <b>
 <div align="left" style="margin-left:10%;">
 <pre>
 <code class="language-python">
-from Spatialcl.thermal import elastic
-elastic_transform(
-     img = image,
-     alpha = 1
-     sigma = 0.8,
-)
+     from Spatialcl.thermal import elastic
+     aug_img = elastic_transform(img = image,alpha = 1, sigma = 0.8)
 </code>
 </pre>
 </div>
@@ -178,11 +177,9 @@ uncertainy = co_cluster_uncertainty(z, labels, img_id)
 <pre>
 <code class="language-python">
 from Spatialcl.uncertainty import compute_weights_from_uncertainty
-progressive_reweighting = compute_weights_from_uncertainty(
-            uncertainty=uncertainty_matrix,
-            epoch=0,
-            T = 100
-        )
+progressive_reweighting = compute_weights_from_uncertainty( 
+     uncertainty=uncertainty_matrix, epoch=0 ,
+     T = 100)
 </code>
 </pre>
 </div>
