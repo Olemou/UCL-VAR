@@ -5,74 +5,35 @@ from utils.weight_param import set_lr_para
 
 def get_optimizer(model: torch.nn.Module):
     """
-    Create an AdamW optimizer with separate parameter groups for head and backbone.
-    Works for DDP-wrapped models.
+    Create AdamW optimizer with separate learning rates for head and backbone.
+    Automatically handles DDP models.
     """
-    # Get underlying model if DDP
-    base_model = (
-        model.module
-        if isinstance(model, torch.nn.parallel.DistributedDataParallel)
-        else model
-    )
+    model = model.module if isinstance(model, torch.nn.parallel.DistributedDataParallel) else model
 
-    # Head parameters
-    head_params = list(base_model.head.parameters())
-    head_params_set = {id(p) for p in head_params}
+    params = set_lr_para()
+    if params is None:
+        raise ValueError("❌ set_lr_para() returned None. Please check its return statement.")
 
-    # Backbone parameters
-    backbone_params = [
-        p for p in base_model.parameters() if id(p) not in head_params_set
-    ]
+    head = list(model.head.parameters())
+    head_ids = {id(p) for p in head}
+    backbone = [p for p in model.parameters() if id(p) not in head_ids]
 
-    # Optimizer hyperparameters
-    optimizer_params = set_lr_para()
-    if optimizer_params is None:
-        raise ValueError(
-            "❌ set_lr_para() returned None. Please check its return statement."
-        )
-
-    optimizer = torch.optim.AdamW(
-        [
-            {
-                "params": head_params,
-                "lr": optimizer_params["base_lr_head"],
-                "weight_decay": optimizer_params["weight_decay_head"],
-            },
-            {
-                "params": backbone_params,
-                "lr": optimizer_params["base_lr_backbone"],
-                "weight_decay": optimizer_params["weight_decay_backbone"],
-            },
-        ]
-    )
-    return optimizer
+    return torch.optim.AdamW([
+        {"params": head, "lr": params["base_lr_head"], "initial_lr": params["base_lr_head"], "weight_decay": params["weight_decay_head"]},
+        {"params": backbone, "lr": params["base_lr_backbone"], "initial_lr": params["base_lr_backbone"], "weight_decay": params["weight_decay_backbone"]},
+    ])
 
 
-def cosine_schedule(
-    epoch: int = 0,
-    optimizer: torch.optim.Optimizer = None,
-    warmup_epochs: int = 10,
-    max_epochs: int = 100,
-    min_lr: float = 1e-6,
-):
+def cosine_schedule(epoch, optimizer, warmup_epochs, max_epochs, min_lr=1e-6):
     """
-    Update optimizer learning rates for two parameter groups (head and backbone)
-    using quadratic warmup + cosine decay.
-
-    Args:
-        epoch (int): current epoch
-        optimizer (torch.optim.Optimizer): optimizer with param_groups
-        warmup_epochs (int): number of warmup epochs
-        max_epochs (int): total number of epochs
-        min_lr (float): minimum learning rate
+    Quadratic warmup + cosine LR decay.
     """
-    for _, param_group in enumerate(optimizer.param_groups):
-        base_lr = param_group.get("initial_lr", param_group["lr"])
+    for pg in optimizer.param_groups:
+        base_lr = pg["initial_lr"]
         if epoch < warmup_epochs:
-            # Quadratic warmup: min_lr → base_lr
             lr = min_lr + (base_lr - min_lr) * (epoch / warmup_epochs) ** 2
         else:
-            # Cosine decay: base_lr → min_lr
             progress = (epoch - warmup_epochs) / (max_epochs - warmup_epochs)
             lr = min_lr + 0.5 * (base_lr - min_lr) * (1 + np.cos(np.pi * progress))
-        param_group["lr"] = lr
+        pg["lr"] = lr
+    return [pg["lr"] for pg in optimizer.param_groups]

@@ -193,7 +193,7 @@ output = build_uwcl(z=z, img_ids=img_id, labels=label, epoch=0, device="cpu")
 </pre>
 </div>
 
-## Training & Evalidation 
+# 🅒 Training & Evalidation (DISCO)
 
 ### 🎯 Single-GPU (Non-Distributed) Training
 ***root: stands for your data folder path*** 
