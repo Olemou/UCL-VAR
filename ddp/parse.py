@@ -48,7 +48,7 @@ def parse_ddp_args():
     parser.add_argument("--root", type=str, default="./data")
     parser.add_argument("--vit_variant", type=str, default="base")
     parser.add_argument(
-        "--modality", type=dict, default={"rgb": True, "thermal": False}
+        "--modality", type=str, default='{"rgb": True, "thermal": False}'
     )
     parser.add_argument(
         "--is_distributed",

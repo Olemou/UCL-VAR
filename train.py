@@ -1,4 +1,5 @@
 from clr_utils import *
+import json
 from torch.utils.data import DataLoader, DistributedSampler
 from ddp.env import setup_env, seed_everything
 from ddp.parse import parse_ddp_args, init_distributed_mode
@@ -23,10 +24,14 @@ from spatialcl.uwcl import build_uwcl
 from check_point.save_point import save_checkpoint
 
 
-def param_dataloader_init(args):
+def param_dataloader_init(args, logger: TrainLogger = None):
     """Main training setup for distributed or single-node training."""
 
     # --- Select transformation based on modality ---
+    if isinstance(args.modality, str):
+        args.modality = json.loads(args.modality)
+    else:
+        logger.error("Modality argument must be a string in JSON format.")
     if args.modality.get("rgb", False):
         transform = RgbAugmentation(RgbAugConfig()).transform
     elif args.modality.get("thermal", False):
@@ -193,18 +198,18 @@ def main():
     # --- Environment setup ---
     setup_env()
     seed_everything()
-
+    
+    rank = get_rank() if torch.distributed.is_initialized() else 0
+    logger = TrainLogger(log_dir="./logs", rank=rank)
+    logger.info("Environment setup complete.")
     # --- Distributed setup ---
     args = parse_ddp_args()
     if args.is_distributed:
-        init_distributed_mode(args)
+        init_distributed_mode(args,logger)
 
     """Main training setup for distributed or single-node training."""
     # --- DataLoaders & DDP setup ---
     train_loader, val_loader, _ = param_dataloader_init(args)
-
-    rank = get_rank() if torch.distributed.is_initialized() else 0
-    logger = TrainLogger(log_dir="./logs", rank=rank)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
