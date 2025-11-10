@@ -139,7 +139,7 @@ Let's suppose the image is loaded and readable.
 </pre>
 </div>
 
-- <b>🌀 Elastic Transfrormation <b>
+- <b>🌀 Elastic Transfrormation </b>
 <div align="left" style="margin-left:10%;">
 <pre>
 <code class="language-python">
@@ -200,7 +200,7 @@ output = build_uwcl(z=z, img_ids=img_id, labels=label, epoch=0, device="cpu")
 <div align="left" style="margin-left:10%;">
 <pre>
 <code class="language-python">
-python train.py --batch_size 32 --num_workers 4 --root ./data --vit_variant base --temperatue 0.1 --num_epochs 50
+python train.py --batch_size 32 --num_workers 4 --root ./data --vit_variant base --temperatue 0.1 --num_epochs 50 ---dataset_class None --modality '{"rgb": False,"thermal": True}'
 </code>
 </pre>
 </div>
@@ -221,9 +221,32 @@ torchrun \
   --root ./data \ 
   --vit_variant base \ 
   --temperatue 0.1 \ 
-  --num_epochs 50
+  --num_epochs 50 \
+  ---dataset_class None \
+  --modality '{"rgb": False,"thermal": True}'
 </code>
 </pre>
 </div>
-## Results
-Coming soon
+
+# 🅓 Results
+### 1️⃣ <b> Pretrained customize Vit-base </b>
+<div style="display: flex; justify-content: space-between; align-items: flex-start;">
+
+  <!-- Column 1 -->
+  <div style="flex: 1; margin-right: 10px;">
+    <h3>Model</h3>
+    <p>Vit-base customize</p>
+  </div>
+
+  <!-- Column 2: Download Link -->
+  <div style="flex: 1; margin-left: 10px; text-align: center;">
+    <h3>Download Model</h3>
+    <a href="https://example.com/path/to/your_model.pth" download>
+      <button style="padding: 10px 20px; font-size: 16px; cursor: pointer;">
+        Download Weights
+      </button>
+    </a>
+    <p>Click the button to download the pretrained model.</p>
+  </div>
+
+</div>
