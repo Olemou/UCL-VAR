@@ -252,7 +252,7 @@ torchrun \
     <td align="center"><b>Classification Metrics</b></td>
   </tr>
   <tr>
-    <td align="center"><img src="assets/disco.png" alt="Hot Water" width="800"/></td>
+    <td align="center"><img src="assets/disco/disco.png" alt="Hot Water" width="800"/></td>
   </tr>
 </table>
 
@@ -266,9 +266,9 @@ torchrun \
     <td align="center"><b>Attention Rollout</b></td>
   </tr>
   <tr>
-    <td align="center"><img src="assets/hot_water.png" alt="Hot Water" width="300"/></td>
-    <td align="center"><img src="assets/hot_last_block.png" alt="Last Block" width="250"/></td>
-    <td align="center"><img src="assets/hot_attention_rollout.png" alt="Attention Rollout" width="250"/></td>
+    <td align="center"><img src="assets/disco/hot_water.png" alt="Hot Water" width="300"/></td>
+    <td align="center"><img src="assets/disco/hot_last_block.png" alt="Last Block" width="250"/></td>
+    <td align="center"><img src="assets/disco/hot_attention_rollout.png" alt="Attention Rollout" width="250"/></td>
   </tr>
 </table>
 
