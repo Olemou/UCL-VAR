@@ -295,14 +295,6 @@ torchrun \
 
   
   ### 1️⃣ <b>Anomaly detection in wood construction materials</b>
-  - 🔸 ***t-SNE wooden material***
-  <div align="center" style="margin-top: 20px; margin-bottom: 20px;">
-  <h2>t-SNE wooden material</h2>
-  <p style="font-size: 16px; color: gray;">
-  </p>
-  <img src="assets/anomaly/wood/tsne_wood.png" alt="SpatialCL Architecture" width="300"/>
-</div>
-
   - <b> Original Vs Attention-Map</b>
 <table align="center">
   <tr>
@@ -312,27 +304,27 @@ torchrun \
 
   <tr>
     <td align="center"><img src="assets/anomaly/wood/color.png" width="200"></td>
-    <td align="center"><img src="assets/img1.png" width="300"></td>
+    <td align="center"><img src="assets/anomaly/wood/color_attn.png" width="200"></td>
   </tr>
 
   <tr>
     <td align="center"><img src="assets/anomaly/wood/combine.png" width="200"></td>
-    <td align="center"><img src="assets/img1.png" width="300"></td>
+    <td align="center"><img src="assets/anomaly/wood/combine_attn.png" width="200"></td>
   </tr>
 
   <tr>
     <td align="center"><img src="assets/anomaly/wood/hole.png" width="200"></td>
-    <td align="center"><img src="assets/img1.png" width="300"></td>
+    <td align="center"><img src="assets/anomaly/wood/hole_attn.png" width="200"></td>
   </tr>
 
   <tr>
     <td align="center"><img src="assets/anomaly/wood/scratch.png" width="200"></td>
-    <td align="center"><img src="assets/img1.png" width="300"></td>
+    <td align="center"><img src="assets/anomaly/wood/scratch_attn.png" width="300"></td>
   </tr>
 
   <tr>
     <td align="center"><img src="assets/anomaly/wood/water.png" width="200"></td>
-    <td align="center"><img src="assets/img1.png" width="300"></td>
+    <td align="center"><img src="assets/anomaly/wood/floor_attn.png" width="200"></td>
   </tr>
 </table>
 
