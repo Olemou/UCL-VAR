@@ -140,7 +140,7 @@ class VisionTransformer(nn.Module):
         drop_rate=0.1,
         qkv_bias=True,
         use_checkpoint=True,
-        head_hidden_dim=None,
+        head_hidden_dim=128,
     ):
         super().__init__()
         assert (
@@ -212,4 +212,4 @@ class VisionTransformer(nn.Module):
 
         x = self.norm(x)
 
-        return self.head(x[:, 0])
+        return self.head(x[:, 1:,:])  # return patch embeddings only
